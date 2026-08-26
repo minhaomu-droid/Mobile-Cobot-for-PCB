@@ -1,0 +1,6 @@
+{
+  "name": "犀准机器人 工业Pad控制终端",
+  "description": "联想小新Pad Pro 12.7 专用 犀准机器人 (Rhinorobo) 测厚机与复合机器人站控及遥操 HMI 终端",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
