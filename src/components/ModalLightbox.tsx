@@ -16,7 +16,7 @@ import {
 interface ModalLightboxProps {
   activeModal: ActiveModalType;
   onCloseModal: () => void;
-  onConfirmStartLoading: () => void;
+  onConfirmStartLoading: (boardCount?: number) => void;
   onConfirmBoardsInput: (count: number, width?: string) => void;
   onConfirmTaskSafety?: (mode: 'RESUME' | 'RESTART') => void;
   onConfirmGripperAction?: (action: 'OPEN' | 'CLOSE') => void;
@@ -38,7 +38,7 @@ export const ModalLightbox: React.FC<ModalLightboxProps> = ({
 }) => {
   if (activeModal === 'NONE') return null;
 
-  // State for Modal 2: Remaining Boards and PCB Width
+  // State for PCB Board Count in Start & Remaining Modal
   const [boardCountInput, setBoardCountInput] = useState<string>('150');
   const [boardWidthInput, setBoardWidthInput] = useState<string>('410 mm');
 
@@ -63,25 +63,52 @@ export const ModalLightbox: React.FC<ModalLightboxProps> = ({
           <X className="w-4 h-4" />
         </button>
 
-        {/* 1. Modal 1: 卡扣安全确认弹窗 (Exact match with wireframe on the right) */}
+        {/* 1. Modal 1: 启动上下料 - 卡扣安全与当前PCB板数量确认弹窗 */}
         {activeModal === 'SAFETY_LOCK_CONFIRM' && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
               <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-300 flex items-center justify-center text-amber-600">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">卡扣状态安全确认</h3>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">卡扣状态与PCB板数安全确认</h3>
+                <p className="text-[11px] text-slate-500 font-mono">启动自动上下料循环前的人工安全防呆</p>
+              </div>
             </div>
 
             {/* Exact Wireframe Text */}
-            <div className="bg-amber-50/70 border-2 border-amber-300/80 rounded-2xl p-4 text-slate-800 text-sm leading-relaxed">
+            <div className="bg-amber-50/70 border-2 border-amber-300/80 rounded-2xl p-4 text-slate-800 text-xs sm:text-sm leading-relaxed">
               请确认上下料承载件的所有卡扣处于打开状态，确定请点击确定继续下发工作任务，否则点击取消返回。如卡扣未打开造成的损失由操作人员负责!
             </div>
 
+            {/* PCB Board Count Confirmation Field */}
+            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <label className="text-xs sm:text-sm font-bold text-slate-800 shrink-0">
+                  确认当前PCB板数量:
+                </label>
+                <div className="flex items-center gap-2 flex-1 max-w-[200px]">
+                  <input
+                    type="number"
+                    value={boardCountInput}
+                    onChange={(e) => setBoardCountInput(e.target.value)}
+                    min="1"
+                    max="9999"
+                    className="w-full px-3 py-2 bg-[#d8f3dc] text-slate-900 font-mono font-bold text-sm rounded-xl border-2 border-emerald-500 focus:outline-none shadow-inner text-center"
+                  />
+                  <span className="text-xs font-bold text-slate-600 shrink-0">片</span>
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-500 font-mono">系统将以当前确认的板数设定为本次测厚作业目标计划</p>
+            </div>
+
             {/* Buttons: [确定] [取消] (Cyan styling matching wireframe) */}
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-3 pt-1">
               <button
-                onClick={onConfirmStartLoading}
+                onClick={() => {
+                  const count = parseInt(boardCountInput) || 150;
+                  onConfirmStartLoading(count);
+                }}
                 className="px-6 py-2.5 bg-[#5bc0de] hover:bg-[#31b0d5] text-white font-bold text-sm rounded-xl border border-[#46b8da] shadow-md transition-all active:scale-95 cursor-pointer"
               >
                 确定

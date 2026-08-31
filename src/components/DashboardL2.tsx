@@ -71,8 +71,8 @@ export const DashboardL2: React.FC<DashboardL2Props> = ({
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">综合良品率</p>
-            <p className="text-xl font-black font-mono text-emerald-600">{passRate}%</p>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">设备综合稼动率</p>
+            <p className="text-xl font-black font-mono text-emerald-600">98.5%</p>
           </div>
         </div>
 
@@ -223,8 +223,8 @@ export const DashboardL2: React.FC<DashboardL2Props> = ({
                   {/* Current Thickness & Sensors */}
                   <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4">
                     <div>
-                      <p className="text-[10px] text-slate-500 font-medium">名义厚度</p>
-                      <p className="text-xs font-bold font-mono text-slate-900">{station.nominalThickness.toFixed(3)} mm</p>
+                      <p className="text-[10px] text-slate-500 font-medium">PCB规格</p>
+                      <p className="text-xs font-bold font-mono text-slate-900 truncate">{station.pcbDimensions}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-500 font-medium">实时激光测厚</p>
@@ -265,8 +265,7 @@ export const DashboardL2: React.FC<DashboardL2Props> = ({
                 {/* Card Action Footer */}
                 <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                   <span className="text-xs text-slate-500 font-mono">
-                    已加工: <span className="text-slate-900 font-bold">{station.passCount}</span> 板 / 废品{' '}
-                    <span className="text-red-600 font-bold">{station.failCount}</span>
+                    已加工进度: <span className="text-slate-900 font-bold">{station.passCount + station.failCount}</span> / {station.totalBoardsGoal || 150} 片
                   </span>
 
                   <button

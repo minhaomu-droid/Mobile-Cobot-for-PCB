@@ -113,8 +113,8 @@ export const GlobalSideNav: React.FC<GlobalSideNavProps> = ({
 
   return (
     <aside
-      className={`bg-white border-r-2 border-slate-300 flex flex-col justify-between py-3 select-none transition-all duration-300 z-20 shrink-0 shadow-sm ${
-        collapsed ? 'w-16 px-1.5' : 'w-52 px-2.5'
+      className={`bg-white border-r-2 border-slate-300 flex flex-col justify-between py-3.5 select-none transition-all duration-300 z-20 shrink-0 shadow-sm ${
+        collapsed ? 'w-18 px-2' : 'w-56 sm:w-60 px-3'
       }`}
     >
       {/* Top Logo & Collapse Toggle */}
@@ -125,15 +125,15 @@ export const GlobalSideNav: React.FC<GlobalSideNavProps> = ({
           </div>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
             title={collapsed ? '展开导航栏' : '收起导航栏'}
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {collapsed ? <ChevronRight className="w-4.5 h-4.5" /> : <ChevronLeft className="w-4.5 h-4.5" />}
           </button>
         </div>
 
         {/* Navigation Items List */}
-        <nav className="w-full space-y-1.5">
+        <nav className="w-full space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPanel === item.id;
@@ -141,22 +141,22 @@ export const GlobalSideNav: React.FC<GlobalSideNavProps> = ({
               <button
                 key={item.id}
                 onClick={() => onSelectPanel(item.id)}
-                className={`w-full flex items-center rounded-xl p-2.5 transition-all relative cursor-pointer group ${
+                className={`w-full flex items-center rounded-xl py-3 px-3 transition-all relative cursor-pointer group ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-bold'
-                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 font-black'
+                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-bold'
                 } ${collapsed ? 'justify-center' : 'justify-start gap-3'}`}
                 title={item.label}
               >
                 {/* Icon Container with Badge */}
                 <div className="relative shrink-0 flex items-center justify-center">
                   <Icon
-                    className={`w-5 h-5 transition-transform group-hover:scale-110 ${
+                    className={`w-5.5 h-5.5 transition-transform group-hover:scale-110 ${
                       isActive ? 'text-white' : 'text-slate-600'
                     }`}
                   />
                   {item.badge !== null && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white">
+                    <span className="absolute -top-1.5 -right-2 min-w-[20px] h-5 px-1 bg-red-500 text-white text-xs font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
                       {item.badge}
                     </span>
                   )}
@@ -164,14 +164,14 @@ export const GlobalSideNav: React.FC<GlobalSideNavProps> = ({
 
                 {/* Text Label */}
                 {!collapsed && (
-                  <span className="text-xs truncate tracking-tight text-left flex-1">
+                  <span className="text-sm sm:text-[15px] leading-tight truncate tracking-tight text-left flex-1">
                     {item.label}
                   </span>
                 )}
 
-                {/* Active Indicator Bar on left when active */}
+                {/* Active Indicator Bar on left/right when active */}
                 {isActive && !collapsed && (
-                  <span className="w-1.5 h-4 bg-white/70 rounded-full" />
+                  <span className="w-1.5 h-4.5 bg-white rounded-full shrink-0" />
                 )}
               </button>
             );
@@ -180,99 +180,53 @@ export const GlobalSideNav: React.FC<GlobalSideNavProps> = ({
       </div>
 
       {/* Bottom Emergency Stops & Logout Section */}
-      <div className="pt-3 border-t border-slate-200 flex flex-col gap-2.5">
+      <div className="pt-3.5 border-t border-slate-200 flex flex-col gap-3">
         {/* Dedicated Robot E-Stop Buttons for M-01 and M-02 */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           {!collapsed && (
             <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-bold text-slate-500 tracking-wider">机器人独立急停</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+              <span className="text-xs font-black text-slate-600 tracking-wide">机器人独立急停</span>
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
             </div>
           )}
 
           {/* M-01 E-Stop Button */}
           <button
             onClick={onTriggerEstopM01}
-            className={`w-full flex items-center rounded-xl p-2 font-bold transition-all shadow-xs cursor-pointer active:scale-95 border ${
-              m01Estop
-                ? 'bg-red-600 hover:bg-red-700 text-white border-red-700 animate-pulse'
-                : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-300 hover:border-red-400'
-            } ${collapsed ? 'justify-center flex-col gap-0.5 py-2' : 'justify-between gap-2'}`}
+            className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 font-black text-sm sm:text-[15px] text-white bg-red-600 hover:bg-red-700 active:bg-red-800 border-2 border-red-700 shadow-sm transition-all cursor-pointer active:scale-95 ${
+              m01Estop ? 'bg-red-700 animate-pulse ring-2 ring-red-400' : ''
+            }`}
             title="M-01 上料复合机器人急停 (E-STOP)"
           >
-            <div className="flex items-center gap-2">
-              <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
-                m01Estop ? 'bg-red-700 text-white' : 'bg-red-200 text-red-800'
-              }`}>
-                <AlertOctagon className="w-3.5 h-3.5" />
-              </div>
-              {!collapsed && (
-                <div className="text-left leading-tight">
-                  <div className="text-xs font-black">M-01 急停</div>
-                  <div className={`text-[9px] font-mono ${m01Estop ? 'text-red-100' : 'text-red-600/80'}`}>
-                    {m01Estop ? '已锁定 (点击复位)' : '上料机器人'}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {!collapsed && (
-              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                m01Estop ? 'bg-white text-red-700' : 'bg-red-200 text-red-800'
-              }`}>
-                {m01Estop ? 'STOPPED' : 'ESTOP'}
-              </span>
-            )}
-            {collapsed && <span className="text-[9px] font-black text-red-700">M-01</span>}
+            <AlertOctagon className="w-5 h-5 text-white shrink-0" />
+            {!collapsed && <span>{m01Estop ? 'M-01已急停' : 'M-01急停'}</span>}
+            {collapsed && <span className="text-xs font-bold">M-01</span>}
           </button>
 
           {/* M-02 E-Stop Button */}
           <button
             onClick={onTriggerEstopM02}
-            className={`w-full flex items-center rounded-xl p-2 font-bold transition-all shadow-xs cursor-pointer active:scale-95 border ${
-              m02Estop
-                ? 'bg-red-600 hover:bg-red-700 text-white border-red-700 animate-pulse'
-                : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-300 hover:border-red-400'
-            } ${collapsed ? 'justify-center flex-col gap-0.5 py-2' : 'justify-between gap-2'}`}
+            className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 px-3 font-black text-sm sm:text-[15px] text-white bg-red-600 hover:bg-red-700 active:bg-red-800 border-2 border-red-700 shadow-sm transition-all cursor-pointer active:scale-95 ${
+              m02Estop ? 'bg-red-700 animate-pulse ring-2 ring-red-400' : ''
+            }`}
             title="M-02 收料复合机器人急停 (E-STOP)"
           >
-            <div className="flex items-center gap-2">
-              <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
-                m02Estop ? 'bg-red-700 text-white' : 'bg-red-200 text-red-800'
-              }`}>
-                <AlertOctagon className="w-3.5 h-3.5" />
-              </div>
-              {!collapsed && (
-                <div className="text-left leading-tight">
-                  <div className="text-xs font-black">M-02 急停</div>
-                  <div className={`text-[9px] font-mono ${m02Estop ? 'text-red-100' : 'text-red-600/80'}`}>
-                    {m02Estop ? '已锁定 (点击复位)' : '收料机器人'}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {!collapsed && (
-              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                m02Estop ? 'bg-white text-red-700' : 'bg-red-200 text-red-800'
-              }`}>
-                {m02Estop ? 'STOPPED' : 'ESTOP'}
-              </span>
-            )}
-            {collapsed && <span className="text-[9px] font-black text-red-700">M-02</span>}
+            <AlertOctagon className="w-5 h-5 text-white shrink-0" />
+            {!collapsed && <span>{m02Estop ? 'M-02已急停' : 'M-02急停'}</span>}
+            {collapsed && <span className="text-xs font-bold">M-02</span>}
           </button>
         </div>
 
         {/* Bottom Logout Button */}
         <button
           onClick={onLogout}
-          className={`w-full flex items-center rounded-xl p-2.5 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-200 transition-all cursor-pointer ${
+          className={`w-full flex items-center rounded-xl py-2.5 px-3 bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-200 transition-all cursor-pointer ${
             collapsed ? 'justify-center' : 'justify-start gap-2.5'
           }`}
           title="退出登录"
         >
-          <LogOut className="w-4 h-4 text-slate-500 hover:text-red-600 shrink-0" />
-          {!collapsed && <span className="text-xs font-bold">退出登录</span>}
+          <LogOut className="w-4.5 h-4.5 text-slate-600 hover:text-red-600 shrink-0" />
+          {!collapsed && <span className="text-sm font-bold">退出登录</span>}
         </button>
       </div>
     </aside>

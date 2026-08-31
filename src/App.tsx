@@ -203,23 +203,60 @@ export default function App() {
     showToast(`已接入新机台 [${name}]，MES工单与PCB长宽规格已自动同步下发`);
   };
 
+  // Handler: Update Station
+  const handleUpdateStation = (stationId: string, updatedName: string, updatedLot?: string) => {
+    setStations((prev) =>
+      prev.map((s) => (s.id === stationId ? { ...s, name: updatedName, currentLot: updatedLot || s.currentLot } : s))
+    );
+    showToast(`机台 [${updatedName}] 信息修改成功`);
+  };
+
+  // Handler: Delete Station
+  const handleDeleteStation = (stationId: string) => {
+    if (stations.length <= 1) {
+      showToast('至少保留一台测厚机台，无法全部删除');
+      return;
+    }
+    const target = stations.find((s) => s.id === stationId);
+    setStations((prev) => prev.filter((s) => s.id !== stationId));
+    if (selectedStationId === stationId) {
+      const remaining = stations.filter((s) => s.id !== stationId);
+      if (remaining.length > 0) {
+        setSelectedStationId(remaining[0].id);
+      }
+    }
+    showToast(`已删除机台 [${target?.name || stationId}]`);
+  };
+
   // Handler: Confirm Start Loading (Modal 1)
-  const handleConfirmStartLoading = () => {
+  const handleConfirmStartLoading = (boardCount?: number) => {
     setActiveModal('NONE');
+    const finalCount = boardCount && boardCount > 0 ? boardCount : 150;
     setStations((prev) =>
       prev.map((s) => {
         if (s.id === selectedStationId) {
           return {
             ...s,
             status: 'RUNNING',
-            loadingAMR: { ...s.loadingAMR, status: 'NAVIGATING', currentTask: '自动上料抓取循环执行中' },
-            unloadingAMR: { ...s.unloadingAMR, status: 'PICKING', currentTask: '接收测厚板材并码垛' },
+            totalBoardsGoal: finalCount,
+            loadingAMR: {
+              ...s.loadingAMR,
+              status: 'NAVIGATING',
+              totalBoardsGoal: finalCount,
+              currentTask: `自动上料抓取循环执行中 (共 ${finalCount} 片)`,
+            },
+            unloadingAMR: {
+              ...s.unloadingAMR,
+              status: 'PICKING',
+              totalBoardsGoal: finalCount,
+              currentTask: '接收测厚板材并码垛',
+            },
           };
         }
         return s;
       })
     );
-    showToast(`【卡扣安全就位】已指令 ${currentStation.name} 与复合机器人启动上下料循环！`);
+    showToast(`【卡扣与PCB板数(${finalCount}片)已确认】已启动 ${currentStation.name} 自动上下料循环！`);
   };
 
   // Handler: Confirm Remaining Boards & Width Input (Modal 2)
@@ -335,6 +372,39 @@ export default function App() {
     showToast(`已暂停 ${currentStation.name} 及上下料复合机器人运行`);
   };
 
+  // Handler: Trigger Safe Stop (Stop after current workpiece finish)
+  const handleTriggerSafeStop = () => {
+    setStations((prev) =>
+      prev.map((s) => {
+        if (s.id === selectedStationId) {
+          return {
+            ...s,
+            loadingAMR: { ...s.loadingAMR, currentTask: '安全停止中 (当前作业完成后停止)' },
+            unloadingAMR: { ...s.unloadingAMR, currentTask: '安全停止中 (当前作业完成后停止)' },
+          };
+        }
+        return s;
+      })
+    );
+    showToast(`已设置【安全停止】：${currentStation.name} 及上下料机器人将在当前单片作业完成后平稳停止`);
+  };
+
+  // Handler: Trigger Global E-Stop (Stop both M-01 & M-02 immediately)
+  const handleTriggerGlobalEstop = () => {
+    setM01Estop(true);
+    setM02Estop(true);
+    setIsEstopTriggered(true);
+    setStations((prev) =>
+      prev.map((s) => ({
+        ...s,
+        status: 'STANDBY',
+        loadingAMR: { ...s.loadingAMR, status: 'ESTOP', currentTask: '【急停触发】伺服动力已切断' },
+        unloadingAMR: { ...s.unloadingAMR, status: 'ESTOP', currentTask: '【急停触发】伺服动力已切断' },
+      }))
+    );
+    showToast('【全局停止 E-STOP 已触发】立即切断上料(M-01)与下料(M-02)两台复合机器人所有伺服动力！');
+  };
+
   // Handler: Trigger First Article
   const handleTriggerFirstArticle = () => {
     showToast('首件自动送样校准流程已启动，激光传感器自动调零校准');
@@ -417,7 +487,7 @@ export default function App() {
       />
 
       {/* Main Working View Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-100">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-100">
         {/* Top Real-time Hardware & Safety Status Bar (Every page displays E-stop, Alarms, Pad Battery, RMS Sync) */}
         <TopStatusBar
           userSession={userSession}
@@ -439,10 +509,16 @@ export default function App() {
             }}
             onLogout={handleLogout}
             onAddStation={handleAddStation}
+            onUpdateStation={handleUpdateStation}
+            onDeleteStation={handleDeleteStation}
             onDirectRobotControl={(robotType) => {
               setSelectedRobotType(robotType);
               setCurrentPanel('ROBOT_TELEOP');
             }}
+            m01Estop={m01Estop}
+            m02Estop={m02Estop}
+            onTriggerEstopM01={handleTriggerEstopM01}
+            onTriggerEstopM02={handleTriggerEstopM02}
           />
         )}
 
@@ -458,11 +534,17 @@ export default function App() {
             onOpenRemainingBoardsModal={() => setActiveModal('REMAINING_BOARDS_INPUT')}
             onTriggerTaskMode={handleTriggerTaskMode}
             onTriggerPause={handleTriggerPause}
+            onTriggerSafeStop={handleTriggerSafeStop}
+            onTriggerGlobalEstop={handleTriggerGlobalEstop}
             onTriggerFirstArticle={handleTriggerFirstArticle}
             onResetRobot={handleResetRobot}
             onSyncRMS={handleSyncRMS}
             onBackToHome={() => setCurrentPanel('HOME_STATION_LIST')}
             onLogout={handleLogout}
+            m01Estop={m01Estop}
+            m02Estop={m02Estop}
+            onTriggerEstopM01={handleTriggerEstopM01}
+            onTriggerEstopM02={handleTriggerEstopM02}
           />
         )}
 
@@ -476,6 +558,10 @@ export default function App() {
             pokaYokeHoldSeconds={2.0}
             onRequestGripperSafetyConfirm={handleRequestGripperSafetyConfirm}
             onLogout={handleLogout}
+            m01Estop={m01Estop}
+            m02Estop={m02Estop}
+            onTriggerEstopM01={handleTriggerEstopM01}
+            onTriggerEstopM02={handleTriggerEstopM02}
           />
         )}
 

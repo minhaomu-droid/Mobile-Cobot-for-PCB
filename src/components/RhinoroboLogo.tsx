@@ -20,10 +20,10 @@ export const RhinoroboLogo: React.FC<RhinoroboLogoProps> = ({
   // Dimensions based on size prop
   const iconSize =
     size === 'small'
-      ? 'w-8 h-8'
+      ? 'w-9 h-9'
       : size === 'large'
-      ? 'w-12 h-12'
-      : 'w-9 h-9';
+      ? 'w-14 h-14'
+      : 'w-11 h-11';
 
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
@@ -77,21 +77,21 @@ export const RhinoroboLogo: React.FC<RhinoroboLogoProps> = ({
           <div
             className={`font-black tracking-tight font-sans text-slate-900 ${
               size === 'large'
-                ? 'text-xl'
+                ? 'text-2xl'
                 : size === 'small'
-                ? 'text-xs'
-                : 'text-sm'
+                ? 'text-base font-black'
+                : 'text-lg font-black'
             }`}
           >
             Rhinorobo
           </div>
           <div
-            className={`font-bold tracking-wider text-[#0057FF] ${
+            className={`font-black tracking-wide text-[#0057FF] ${
               size === 'large'
-                ? 'text-xs'
+                ? 'text-sm'
                 : size === 'small'
-                ? 'text-[10px]'
-                : 'text-[11px]'
+                ? 'text-xs'
+                : 'text-xs'
             }`}
           >
             犀准机器人
