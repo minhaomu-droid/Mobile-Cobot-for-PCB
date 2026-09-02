@@ -1,0 +1,32 @@
+name: Build and Download HTML
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # 允许你随时手动点击触发打包
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 安装项目依赖
+        run: npm install
+
+      - name: 执行生产打包
+        run: npm run build
+
+      - name: 上传构建产物 (dist)
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-web-page
+          path: dist/
