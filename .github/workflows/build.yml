@@ -20,7 +20,7 @@ jobs:
           cache: 'npm'
 
       - name: 安装项目依赖
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: 执行生产打包
         run: npm run build
