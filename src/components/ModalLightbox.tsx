@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActiveModalType } from '../types';
 import {
   AlertTriangle,
@@ -10,7 +10,11 @@ import {
   CheckCircle2,
   HandMetal,
   Layers,
-  HelpCircle
+  HelpCircle,
+  Cpu,
+  Wifi,
+  RefreshCw,
+  Server
 } from 'lucide-react';
 
 interface ModalLightboxProps {
@@ -20,9 +24,13 @@ interface ModalLightboxProps {
   onConfirmBoardsInput: (count: number, width?: string) => void;
   onConfirmTaskSafety?: (mode: 'RESUME' | 'RESTART') => void;
   onConfirmGripperAction?: (action: 'OPEN' | 'CLOSE') => void;
+  onConfirmFirstArticle?: () => void;
   onResetEstop: () => void;
   pendingTaskMode?: 'RESUME' | 'RESTART';
   pendingGripperAction?: 'OPEN' | 'CLOSE';
+  serverIp?: string;
+  serverPort?: string;
+  onSaveServerConfig?: (ip: string, port: string) => void;
 }
 
 export const ModalLightbox: React.FC<ModalLightboxProps> = ({
@@ -32,15 +40,22 @@ export const ModalLightbox: React.FC<ModalLightboxProps> = ({
   onConfirmBoardsInput,
   onConfirmTaskSafety,
   onConfirmGripperAction,
+  onConfirmFirstArticle,
   onResetEstop,
   pendingTaskMode = 'RESUME',
   pendingGripperAction = 'OPEN',
+  serverIp = '192.168.1.100',
+  serverPort = '8080',
+  onSaveServerConfig,
 }) => {
   if (activeModal === 'NONE') return null;
 
   // State for PCB Board Count in Start & Remaining Modal
   const [boardCountInput, setBoardCountInput] = useState<string>('150');
   const [boardWidthInput, setBoardWidthInput] = useState<string>('410 mm');
+
+  // Checklist for First Article Calibration (卡扣已拨开安全防呆)
+  const [checkBuckleOpened, setCheckBuckleOpened] = useState(true);
 
   // Checklist for Task Safety Confirmation (人工确认环节)
   const [checkArmSafe, setCheckArmSafe] = useState(true);
@@ -50,6 +65,22 @@ export const ModalLightbox: React.FC<ModalLightboxProps> = ({
   // Checklist for Gripper Safety Confirmation (夹具安全确认)
   const [checkTrayAligned, setCheckTrayAligned] = useState(true);
   const [checkDropSafe, setCheckDropSafe] = useState(true);
+
+  // State for Dispatch Server Config Modal
+  const [inputIp, setInputIp] = useState<string>(serverIp);
+  const [inputPort, setInputPort] = useState<string>(serverPort);
+
+  useEffect(() => {
+    setInputIp(serverIp);
+    setInputPort(serverPort);
+  }, [serverIp, serverPort, activeModal]);
+
+  const handleSaveConfig = () => {
+    if (onSaveServerConfig) {
+      onSaveServerConfig(inputIp.trim() || '192.168.1.100', inputPort.trim() || '8080');
+    }
+    onCloseModal();
+  };
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 select-none font-sans animate-fade-in">
@@ -116,6 +147,73 @@ export const ModalLightbox: React.FC<ModalLightboxProps> = ({
               <button
                 onClick={onCloseModal}
                 className="px-6 py-2.5 bg-[#5bc0de] hover:bg-[#31b0d5] text-white font-bold text-sm rounded-xl border border-[#46b8da] shadow-md transition-all active:scale-95 cursor-pointer"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: 上首件校准 - 卡扣已拨开防呆确认 */}
+        {activeModal === 'FIRST_ARTICLE_CONFIRM' && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-300 flex items-center justify-center text-amber-600">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">上首件校准 - 安全确认</h3>
+                <p className="text-[11px] text-slate-500 font-mono">首件试跑前的人工防呆核验</p>
+              </div>
+            </div>
+
+            {/* Warning / Confirmation Box */}
+            <div className="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-4 text-slate-800 text-xs sm:text-sm leading-relaxed space-y-2">
+              <div className="font-bold text-amber-900 text-sm flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>请操作员务必确认：承载件/料架卡扣已拨开！</span>
+              </div>
+              <p className="text-slate-700">
+                如卡扣未处于拨开打开状态，机械臂取料可能会发生机械干涉、卡板或刮损。请确认卡扣已拨开后点击【确定】继续，否则点击【取消】。
+              </p>
+            </div>
+
+            {/* Checkbox verification */}
+            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={checkBuckleOpened}
+                  onChange={(e) => setCheckBuckleOpened(e.target.checked)}
+                  className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                />
+                <span className="text-xs sm:text-sm font-bold text-slate-800">
+                  我已现场核对，确认所有卡扣已拨开
+                </span>
+              </label>
+            </div>
+
+            {/* Buttons: [确定] [取消] */}
+            <div className="flex items-center justify-end gap-3 pt-1">
+              <button
+                disabled={!checkBuckleOpened}
+                onClick={() => {
+                  if (onConfirmFirstArticle) {
+                    onConfirmFirstArticle();
+                  }
+                  onCloseModal();
+                }}
+                className={`px-6 py-2.5 font-bold text-sm rounded-xl border shadow-md transition-all active:scale-95 cursor-pointer ${
+                  checkBuckleOpened
+                    ? 'bg-[#5bc0de] hover:bg-[#31b0d5] text-white border-[#46b8da]'
+                    : 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed'
+                }`}
+              >
+                确定
+              </button>
+              <button
+                onClick={onCloseModal}
+                className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl border border-slate-300 shadow-sm transition-all active:scale-95 cursor-pointer"
               >
                 取消
               </button>
@@ -339,6 +437,74 @@ export const ModalLightbox: React.FC<ModalLightboxProps> = ({
                 className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-xl border border-red-500 shadow-md cursor-pointer"
               >
                 复位安全回路
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 6. Modal: 调度服务网络通信配置 (Dispatch Server Config Modal) */}
+        {activeModal === 'DISPATCH_SERVER_CONFIG' && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 border-b border-slate-200 pb-3">
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-300 flex items-center justify-center text-blue-600">
+                <Server className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">调度服务网络通信配置</h3>
+                <p className="text-[11px] text-slate-500 font-mono">配置上位调度系统 (Fleet Dispatch Master) IP 与端口</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3.5">
+              {/* Server IP Address */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span>调度服务 IP 地址 (IPv4):</span>
+                  <span className="text-[10px] text-slate-400 font-mono">例: 192.168.1.100</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={inputIp}
+                    onChange={(e) => setInputIp(e.target.value)}
+                    placeholder="192.168.1.100"
+                    className="w-full px-3.5 py-2.5 bg-white text-slate-900 font-mono font-bold text-sm rounded-xl border border-slate-300 focus:outline-none focus:border-blue-500 shadow-2xs"
+                  />
+                </div>
+              </div>
+
+              {/* Port Number */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span>服务端口 (Port):</span>
+                  <span className="text-[10px] text-slate-400 font-mono">例: 8080</span>
+                </label>
+                <input
+                  type="text"
+                  value={inputPort}
+                  onChange={(e) => setInputPort(e.target.value)}
+                  placeholder="8080"
+                  className="w-full px-3.5 py-2.5 bg-white text-slate-900 font-mono font-bold text-sm rounded-xl border border-slate-300 focus:outline-none focus:border-blue-500 shadow-2xs"
+                />
+              </div>
+            </div>
+
+            {/* Modal Buttons: [取消] [保存并应用] */}
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={onCloseModal}
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-300 transition-all cursor-pointer active:scale-95"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveConfig}
+                className="px-6 py-2.5 bg-[#5bc0de] hover:bg-[#31b0d5] text-white font-bold text-xs rounded-xl border border-[#46b8da] shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>保存并应用</span>
               </button>
             </div>
           </div>

@@ -75,6 +75,7 @@ export interface AlarmItem {
   id: string;
   code: string;
   stationName: string;
+  robotId?: string; // 关联复合机器人ID，如 'M-01' 或 'M-02'
   level: 'CRITICAL' | 'WARNING' | 'INFO';
   message: string;
   timestamp: string;
@@ -85,11 +86,13 @@ export interface AlarmItem {
 export type ActiveModalType = 
   | 'NONE'
   | 'SAFETY_LOCK_CONFIRM'
+  | 'FIRST_ARTICLE_CONFIRM'
   | 'REMAINING_BOARDS_INPUT'
   | 'TASK_SAFETY_CONFIRM'
   | 'GRIPPER_SAFETY_CONFIRM'
   | 'CLEAR_ALARM_HOLD'
-  | 'ESTOP_WARNING';
+  | 'ESTOP_WARNING'
+  | 'DISPATCH_SERVER_CONFIG';
 
 export interface SystemConfig {
   // Pad Terminal & Display

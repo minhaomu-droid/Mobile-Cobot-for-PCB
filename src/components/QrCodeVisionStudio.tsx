@@ -219,222 +219,220 @@ export const QrCodeVisionStudio: React.FC<QrCodeVisionStudioProps> = ({ onShowTo
         </div>
       )}
 
-      {/* 4. 实时的二维码采集图像窗口 (带有 3 个视角专属二维码矢量图与绿色识别对准框) */}
+      {/* 4. 实时的二维码采集图像窗口 (白底工业取景器设计，尺寸扩大) */}
       <div
-        className={`relative w-full h-36 sm:h-40 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center border-2 border-slate-400 transition-all ${
-          isCapturing ? 'brightness-150 ring-4 ring-blue-400' : ''
+        className={`relative w-full h-44 sm:h-52 bg-white rounded-xl overflow-hidden flex items-center justify-center border-2 border-slate-300 transition-all ${
+          isCapturing ? 'brightness-95 ring-4 ring-blue-400' : ''
         }`}
       >
-        {/* Camera Live Visual Feed - Dark Industrial Viewfinder */}
-        <svg viewBox="0 0 320 180" className="w-full h-full">
+        {/* Camera Live Visual Feed - Clean Crisp Light Industrial Viewfinder */}
+        <svg viewBox="0 0 320 200" className="w-full h-full">
           <defs>
-            <pattern id="cameraGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.8" />
+            <pattern id="cameraGridLight" width="16" height="16" patternUnits="userSpaceOnUse">
+              <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#f1f5f9" strokeWidth="1" />
             </pattern>
           </defs>
 
-          {/* Grid Viewfinder */}
-          <rect width="320" height="180" fill="#0f172a" />
-          <rect width="320" height="180" fill="url(#cameraGrid)" />
+          {/* Clean White Grid Viewfinder */}
+          <rect width="320" height="200" fill="#f8fafc" />
+          <rect width="320" height="200" fill="url(#cameraGridLight)" />
 
           {/* Viewpoint 1: Docking QR Pattern */}
           {selectedViewpoint === 'DOCKING' && (
-            <g transform="translate(100, 30)">
-              {/* White Background for QR */}
-              <rect x="0" y="0" width="120" height="120" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+            <g transform="translate(95, 35)">
+              {/* White Background with Subtle Border for QR */}
+              <rect x="0" y="0" width="130" height="130" rx="4" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
 
               {/* Three Big Corner Markers */}
               {/* Top-Left */}
-              <rect x="10" y="10" width="28" height="28" fill="#0f172a" />
-              <rect x="14" y="14" width="20" height="20" fill="#ffffff" />
-              <rect x="18" y="18" width="12" height="12" fill="#0f172a" />
+              <rect x="10" y="10" width="30" height="30" fill="#0f172a" />
+              <rect x="15" y="15" width="20" height="20" fill="#ffffff" />
+              <rect x="19" y="19" width="12" height="12" fill="#0f172a" />
 
               {/* Top-Right */}
-              <rect x="82" y="10" width="28" height="28" fill="#0f172a" />
-              <rect x="86" y="14" width="20" height="20" fill="#ffffff" />
-              <rect x="90" y="18" width="12" height="12" fill="#0f172a" />
+              <rect x="90" y="10" width="30" height="30" fill="#0f172a" />
+              <rect x="95" y="15" width="20" height="20" fill="#ffffff" />
+              <rect x="99" y="19" width="12" height="12" fill="#0f172a" />
 
               {/* Bottom-Left */}
-              <rect x="10" y="82" width="28" height="28" fill="#0f172a" />
-              <rect x="14" y="86" width="20" height="20" fill="#ffffff" />
-              <rect x="18" y="90" width="12" height="12" fill="#0f172a" />
+              <rect x="10" y="90" width="30" height="30" fill="#0f172a" />
+              <rect x="15" y="95" width="20" height="20" fill="#ffffff" />
+              <rect x="19" y="99" width="12" height="12" fill="#0f172a" />
 
               {/* Data Matrix / QR Inner Blocks */}
-              <rect x="44" y="12" width="6" height="6" fill="#0f172a" />
-              <rect x="56" y="12" width="6" height="6" fill="#0f172a" />
-              <rect x="68" y="12" width="6" height="6" fill="#0f172a" />
-              <rect x="44" y="24" width="6" height="6" fill="#0f172a" />
-              <rect x="62" y="24" width="6" height="6" fill="#0f172a" />
-              <rect x="50" y="36" width="20" height="6" fill="#0f172a" />
+              <rect x="48" y="12" width="7" height="7" fill="#0f172a" />
+              <rect x="62" y="12" width="7" height="7" fill="#0f172a" />
+              <rect x="76" y="12" width="7" height="7" fill="#0f172a" />
+              <rect x="48" y="25" width="7" height="7" fill="#0f172a" />
+              <rect x="68" y="25" width="7" height="7" fill="#0f172a" />
+              <rect x="54" y="38" width="22" height="7" fill="#0f172a" />
 
-              <rect x="12" y="46" width="6" height="6" fill="#0f172a" />
-              <rect x="24" y="46" width="6" height="6" fill="#0f172a" />
-              <rect x="36" y="46" width="6" height="6" fill="#0f172a" />
-              <rect x="48" y="46" width="24" height="6" fill="#0f172a" />
-              <rect x="82" y="46" width="6" height="6" fill="#0f172a" />
-              <rect x="98" y="46" width="6" height="6" fill="#0f172a" />
+              <rect x="12" y="48" width="7" height="7" fill="#0f172a" />
+              <rect x="25" y="48" width="7" height="7" fill="#0f172a" />
+              <rect x="38" y="48" width="7" height="7" fill="#0f172a" />
+              <rect x="52" y="48" width="26" height="7" fill="#0f172a" />
+              <rect x="90" y="48" width="7" height="7" fill="#0f172a" />
+              <rect x="108" y="48" width="7" height="7" fill="#0f172a" />
 
-              <rect x="18" y="58" width="6" height="6" fill="#0f172a" />
-              <rect x="30" y="58" width="12" height="6" fill="#0f172a" />
-              <rect x="54" y="58" width="12" height="6" fill="#0f172a" />
-              <rect x="78" y="58" width="12" height="6" fill="#0f172a" />
-              <rect x="102" y="58" width="6" height="6" fill="#0f172a" />
+              <rect x="18" y="62" width="7" height="7" fill="#0f172a" />
+              <rect x="32" y="62" width="14" height="7" fill="#0f172a" />
+              <rect x="58" y="62" width="14" height="7" fill="#0f172a" />
+              <rect x="85" y="62" width="14" height="7" fill="#0f172a" />
+              <rect x="110" y="62" width="7" height="7" fill="#0f172a" />
 
-              <rect x="12" y="70" width="6" height="6" fill="#0f172a" />
-              <rect x="42" y="70" width="12" height="6" fill="#0f172a" />
-              <rect x="66" y="70" width="12" height="6" fill="#0f172a" />
-              <rect x="90" y="70" width="18" height="6" fill="#0f172a" />
+              <rect x="12" y="75" width="7" height="7" fill="#0f172a" />
+              <rect x="45" y="75" width="14" height="7" fill="#0f172a" />
+              <rect x="72" y="75" width="14" height="7" fill="#0f172a" />
+              <rect x="98" y="75" width="20" height="7" fill="#0f172a" />
 
-              <rect x="46" y="82" width="6" height="6" fill="#0f172a" />
-              <rect x="58" y="82" width="18" height="6" fill="#0f172a" />
-              <rect x="88" y="82" width="6" height="6" fill="#0f172a" />
-              <rect x="100" y="82" width="6" height="6" fill="#0f172a" />
+              <rect x="50" y="88" width="7" height="7" fill="#0f172a" />
+              <rect x="64" y="88" width="20" height="7" fill="#0f172a" />
+              <rect x="96" y="88" width="7" height="7" fill="#0f172a" />
+              <rect x="110" y="88" width="7" height="7" fill="#0f172a" />
 
-              <rect x="46" y="94" width="12" height="6" fill="#0f172a" />
-              <rect x="68" y="94" width="6" height="6" fill="#0f172a" />
-              <rect x="82" y="94" width="12" height="6" fill="#0f172a" />
-              <rect x="100" y="94" width="6" height="6" fill="#0f172a" />
+              <rect x="50" y="102" width="14" height="7" fill="#0f172a" />
+              <rect x="74" y="102" width="7" height="7" fill="#0f172a" />
+              <rect x="90" y="102" width="14" height="7" fill="#0f172a" />
+              <rect x="110" y="102" width="7" height="7" fill="#0f172a" />
 
-              <rect x="46" y="104" width="6" height="6" fill="#0f172a" />
-              <rect x="62" y="104" width="12" height="6" fill="#0f172a" />
-              <rect x="86" y="104" width="20" height="6" fill="#0f172a" />
+              <rect x="50" y="114" width="7" height="7" fill="#0f172a" />
+              <rect x="68" y="114" width="14" height="7" fill="#0f172a" />
+              <rect x="94" y="114" width="22" height="7" fill="#0f172a" />
             </g>
           )}
 
           {/* Viewpoint 2: PCB Lot DataMatrix Pattern */}
           {selectedViewpoint === 'PCB_LOT' && (
-            <g transform="translate(100, 30)">
+            <g transform="translate(95, 35)">
               {/* White Background */}
-              <rect x="0" y="0" width="120" height="120" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+              <rect x="0" y="0" width="130" height="130" rx="4" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
 
               {/* DataMatrix L-Finder Pattern (Left & Bottom solid borders) */}
-              <rect x="12" y="12" width="6" height="96" fill="#0f172a" />
-              <rect x="12" y="102" width="96" height="6" fill="#0f172a" />
+              <rect x="12" y="12" width="7" height="106" fill="#0f172a" />
+              <rect x="12" y="111" width="106" height="7" fill="#0f172a" />
 
               {/* Top & Right Alternating Clocking Borders */}
-              {/* Top Alternating */}
-              {[18, 30, 42, 54, 66, 78, 90, 102].map((x) => (
-                <rect key={`t-${x}`} x={x} y="12" width="6" height="6" fill="#0f172a" />
+              {[19, 33, 47, 61, 75, 89, 103, 111].map((x) => (
+                <rect key={`t-${x}`} x={x} y="12" width="7" height="7" fill="#0f172a" />
               ))}
-              {/* Right Alternating */}
-              {[18, 30, 42, 54, 66, 78, 90].map((y) => (
-                <rect key={`r-${y}`} x="102" y={y} width="6" height="6" fill="#0f172a" />
+              {[19, 33, 47, 61, 75, 89, 97].map((y) => (
+                <rect key={`r-${y}`} x="111" y={y} width="7" height="7" fill="#0f172a" />
               ))}
 
               {/* DataMatrix Internal Modules */}
-              <rect x="24" y="24" width="12" height="12" fill="#0f172a" />
-              <rect x="48" y="24" width="6" height="18" fill="#0f172a" />
-              <rect x="66" y="24" width="18" height="6" fill="#0f172a" />
-              <rect x="90" y="24" width="6" height="6" fill="#0f172a" />
+              <rect x="26" y="26" width="14" height="14" fill="#0f172a" />
+              <rect x="52" y="26" width="7" height="20" fill="#0f172a" />
+              <rect x="72" y="26" width="20" height="7" fill="#0f172a" />
+              <rect x="98" y="26" width="7" height="7" fill="#0f172a" />
 
-              <rect x="24" y="42" width="18" height="6" fill="#0f172a" />
-              <rect x="48" y="48" width="12" height="12" fill="#0f172a" />
-              <rect x="66" y="36" width="6" height="18" fill="#0f172a" />
-              <rect x="78" y="42" width="18" height="6" fill="#0f172a" />
+              <rect x="26" y="46" width="20" height="7" fill="#0f172a" />
+              <rect x="52" y="52" width="14" height="14" fill="#0f172a" />
+              <rect x="72" y="39" width="7" height="20" fill="#0f172a" />
+              <rect x="85" y="46" width="20" height="7" fill="#0f172a" />
 
-              <rect x="24" y="60" width="6" height="24" fill="#0f172a" />
-              <rect x="36" y="66" width="12" height="6" fill="#0f172a" />
-              <rect x="54" y="66" width="18" height="12" fill="#0f172a" />
-              <rect x="78" y="60" width="12" height="6" fill="#0f172a" />
-              <rect x="90" y="72" width="6" height="18" fill="#0f172a" />
+              <rect x="26" y="66" width="7" height="26" fill="#0f172a" />
+              <rect x="39" y="72" width="14" height="7" fill="#0f172a" />
+              <rect x="59" y="72" width="20" height="14" fill="#0f172a" />
+              <rect x="85" y="66" width="14" height="7" fill="#0f172a" />
+              <rect x="98" y="79" width="7" height="20" fill="#0f172a" />
 
-              <rect x="36" y="84" width="12" height="12" fill="#0f172a" />
-              <rect x="54" y="84" width="6" height="12" fill="#0f172a" />
-              <rect x="66" y="84" width="18" height="6" fill="#0f172a" />
-              <rect x="78" y="90" width="12" height="6" fill="#0f172a" />
+              <rect x="39" y="92" width="14" height="14" fill="#0f172a" />
+              <rect x="59" y="92" width="7" height="14" fill="#0f172a" />
+              <rect x="72" y="92" width="20" height="7" fill="#0f172a" />
+              <rect x="85" y="99" width="14" height="7" fill="#0f172a" />
             </g>
           )}
 
           {/* Viewpoint 3: Carrier Alignment QR Pattern */}
           {selectedViewpoint === 'CARRIER' && (
-            <g transform="translate(100, 30)">
+            <g transform="translate(95, 35)">
               {/* White Background */}
-              <rect x="0" y="0" width="120" height="120" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+              <rect x="0" y="0" width="130" height="130" rx="4" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
 
               {/* Three Big Corner Markers */}
-              <rect x="10" y="10" width="28" height="28" fill="#1e3a8a" />
-              <rect x="14" y="14" width="20" height="20" fill="#ffffff" />
-              <rect x="18" y="18" width="12" height="12" fill="#1e3a8a" />
+              <rect x="10" y="10" width="30" height="30" fill="#1e3a8a" />
+              <rect x="15" y="15" width="20" height="20" fill="#ffffff" />
+              <rect x="19" y="19" width="12" height="12" fill="#1e3a8a" />
 
-              <rect x="82" y="10" width="28" height="28" fill="#1e3a8a" />
-              <rect x="86" y="14" width="20" height="20" fill="#ffffff" />
-              <rect x="90" y="18" width="12" height="12" fill="#1e3a8a" />
+              <rect x="90" y="10" width="30" height="30" fill="#1e3a8a" />
+              <rect x="95" y="15" width="20" height="20" fill="#ffffff" />
+              <rect x="99" y="19" width="12" height="12" fill="#1e3a8a" />
 
-              <rect x="10" y="82" width="28" height="28" fill="#1e3a8a" />
-              <rect x="14" y="86" width="20" height="20" fill="#ffffff" />
-              <rect x="18" y="90" width="12" height="12" fill="#1e3a8a" />
+              <rect x="10" y="90" width="30" height="30" fill="#1e3a8a" />
+              <rect x="15" y="95" width="20" height="20" fill="#ffffff" />
+              <rect x="19" y="99" width="12" height="12" fill="#1e3a8a" />
 
               {/* Center Alignment Pattern */}
-              <rect x="76" y="76" width="18" height="18" fill="#1e3a8a" />
-              <rect x="80" y="80" width="10" height="10" fill="#ffffff" />
-              <rect x="83" y="83" width="4" height="4" fill="#1e3a8a" />
+              <rect x="83" y="83" width="20" height="20" fill="#1e3a8a" />
+              <rect x="87" y="87" width="12" height="12" fill="#ffffff" />
+              <rect x="91" y="91" width="4" height="4" fill="#1e3a8a" />
 
               {/* Blocks */}
-              <rect x="44" y="12" width="12" height="6" fill="#1e3a8a" />
-              <rect x="62" y="12" width="12" height="6" fill="#1e3a8a" />
-              <rect x="48" y="24" width="20" height="6" fill="#1e3a8a" />
-              <rect x="42" y="36" width="6" height="12" fill="#1e3a8a" />
-              <rect x="54" y="36" width="18" height="6" fill="#1e3a8a" />
+              <rect x="48" y="12" width="14" height="7" fill="#1e3a8a" />
+              <rect x="68" y="12" width="14" height="7" fill="#1e3a8a" />
+              <rect x="52" y="26" width="22" height="7" fill="#1e3a8a" />
+              <rect x="46" y="39" width="7" height="14" fill="#1e3a8a" />
+              <rect x="59" y="39" width="20" height="7" fill="#1e3a8a" />
 
-              <rect x="12" y="46" width="18" height="6" fill="#1e3a8a" />
-              <rect x="36" y="46" width="24" height="6" fill="#1e3a8a" />
-              <rect x="66" y="46" width="12" height="6" fill="#1e3a8a" />
-              <rect x="84" y="46" width="24" height="6" fill="#1e3a8a" />
+              <rect x="12" y="50" width="20" height="7" fill="#1e3a8a" />
+              <rect x="39" y="50" width="26" height="7" fill="#1e3a8a" />
+              <rect x="72" y="50" width="14" height="7" fill="#1e3a8a" />
+              <rect x="92" y="50" width="26" height="7" fill="#1e3a8a" />
 
-              <rect x="12" y="58" width="12" height="6" fill="#1e3a8a" />
-              <rect x="30" y="58" width="18" height="6" fill="#1e3a8a" />
-              <rect x="54" y="58" width="12" height="6" fill="#1e3a8a" />
-              <rect x="72" y="58" width="18" height="6" fill="#1e3a8a" />
-              <rect x="96" y="58" width="12" height="6" fill="#1e3a8a" />
+              <rect x="12" y="64" width="14" height="7" fill="#1e3a8a" />
+              <rect x="33" y="64" width="20" height="7" fill="#1e3a8a" />
+              <rect x="59" y="64" width="14" height="7" fill="#1e3a8a" />
+              <rect x="79" y="64" width="20" height="7" fill="#1e3a8a" />
+              <rect x="105" y="64" width="14" height="7" fill="#1e3a8a" />
 
-              <rect x="18" y="70" width="24" height="6" fill="#1e3a8a" />
-              <rect x="48" y="70" width="18" height="6" fill="#1e3a8a" />
-              <rect x="100" y="70" width="8" height="6" fill="#1e3a8a" />
+              <rect x="20" y="77" width="26" height="7" fill="#1e3a8a" />
+              <rect x="52" y="77" width="20" height="7" fill="#1e3a8a" />
+              <rect x="110" y="77" width="9" height="7" fill="#1e3a8a" />
 
-              <rect x="44" y="82" width="12" height="6" fill="#1e3a8a" />
-              <rect x="60" y="82" width="10" height="6" fill="#1e3a8a" />
-              <rect x="100" y="82" width="8" height="18" fill="#1e3a8a" />
+              <rect x="48" y="90" width="14" height="7" fill="#1e3a8a" />
+              <rect x="66" y="90" width="11" height="7" fill="#1e3a8a" />
+              <rect x="110" y="90" width="9" height="20" fill="#1e3a8a" />
 
-              <rect x="44" y="94" width="24" height="6" fill="#1e3a8a" />
-              <rect x="48" y="104" width="12" height="6" fill="#1e3a8a" />
-              <rect x="66" y="104" width="28" height="6" fill="#1e3a8a" />
+              <rect x="48" y="103" width="26" height="7" fill="#1e3a8a" />
+              <rect x="52" y="114" width="14" height="7" fill="#1e3a8a" />
+              <rect x="72" y="114" width="31" height="7" fill="#1e3a8a" />
             </g>
           )}
 
           {/* Green Targeting Bounding Box with Corner Accents */}
           <g>
             <rect
-              x="92"
+              x="82"
               y="22"
-              width="136"
-              height="136"
+              width="156"
+              height="156"
               fill="none"
-              stroke="#10b981"
+              stroke="#059669"
               strokeWidth="1.5"
               strokeDasharray="4 2"
-              opacity="0.8"
+              opacity="0.85"
             />
             {/* Top-Left Corner Bracket */}
-            <path d="M 86 36 L 86 16 L 106 16" fill="none" stroke="#22c55e" strokeWidth="3" />
+            <path d="M 76 38 L 76 16 L 98 16" fill="none" stroke="#16a34a" strokeWidth="3.5" strokeLinecap="round" />
             {/* Top-Right Corner Bracket */}
-            <path d="M 214 16 L 234 16 L 234 36" fill="none" stroke="#22c55e" strokeWidth="3" />
+            <path d="M 222 16 L 244 16 L 244 38" fill="none" stroke="#16a34a" strokeWidth="3.5" strokeLinecap="round" />
             {/* Bottom-Left Corner Bracket */}
-            <path d="M 86 144 L 86 164 L 106 164" fill="none" stroke="#22c55e" strokeWidth="3" />
+            <path d="M 76 162 L 76 184 L 98 184" fill="none" stroke="#16a34a" strokeWidth="3.5" strokeLinecap="round" />
             {/* Bottom-Right Corner Bracket */}
-            <path d="M 214 164 L 234 164 L 234 144" fill="none" stroke="#22c55e" strokeWidth="3" />
+            <path d="M 222 184 L 244 184 L 244 162" fill="none" stroke="#16a34a" strokeWidth="3.5" strokeLinecap="round" />
 
             {/* Center Crosshair */}
-            <line x1="160" y1="12" x2="160" y2="26" stroke="#22c55e" strokeWidth="1.5" />
-            <line x1="160" y1="154" x2="160" y2="168" stroke="#22c55e" strokeWidth="1.5" />
-            <line x1="76" y1="90" x2="90" y2="90" stroke="#22c55e" strokeWidth="1.5" />
-            <line x1="230" y1="90" x2="244" y2="90" stroke="#22c55e" strokeWidth="1.5" />
-            <circle cx="160" cy="90" r="3" fill="none" stroke="#22c55e" strokeWidth="1" />
+            <line x1="160" y1="10" x2="160" y2="28" stroke="#16a34a" strokeWidth="1.5" />
+            <line x1="160" y1="172" x2="160" y2="190" stroke="#16a34a" strokeWidth="1.5" />
+            <line x1="68" y1="100" x2="86" y2="100" stroke="#16a34a" strokeWidth="1.5" />
+            <line x1="234" y1="100" x2="252" y2="100" stroke="#16a34a" strokeWidth="1.5" />
+            <circle cx="160" cy="100" r="3.5" fill="none" stroke="#16a34a" strokeWidth="1.5" />
           </g>
 
           {/* Status Overlay Tag */}
-          <rect x="8" y="8" width="80" height="18" rx="3" fill="#059669" opacity="0.9" />
-          <text x="14" y="20" fill="#ffffff" fontSize="9" fontWeight="bold" fontFamily="monospace">
-            ● REC: 99.8%
+          <rect x="8" y="8" width="84" height="20" rx="4" fill="#059669" />
+          <text x="14" y="22" fill="#ffffff" fontSize="9.5" fontWeight="bold" fontFamily="monospace">
+            ● 识别: 99.8%
           </text>
         </svg>
 
@@ -442,7 +440,7 @@ export const QrCodeVisionStudio: React.FC<QrCodeVisionStudioProps> = ({ onShowTo
         <div className="absolute top-2 right-2 flex items-center gap-1">
           <button
             onClick={handleCaptureSnapshot}
-            className="px-2.5 py-1 bg-blue-600/90 hover:bg-blue-600 text-white rounded-lg text-xs font-black flex items-center gap-1 shadow-md border border-blue-400 active:scale-95 cursor-pointer backdrop-blur-xs"
+            className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-black flex items-center gap-1 shadow-sm border border-blue-500 active:scale-95 cursor-pointer"
             title="拍照抓拍当前二维码"
           >
             <Camera className="w-3.5 h-3.5" />
@@ -451,12 +449,12 @@ export const QrCodeVisionStudio: React.FC<QrCodeVisionStudioProps> = ({ onShowTo
         </div>
 
         {/* Bottom Overlay Info Tag */}
-        <div className="absolute bottom-1.5 left-2 right-2 bg-slate-900/85 backdrop-blur-xs border border-slate-700 px-2 py-0.5 rounded-md flex items-center justify-between text-[10px] font-mono text-slate-300">
-          <span className="truncate text-emerald-400 font-bold flex items-center gap-1">
-            <CheckCircle2 className="w-2.5 h-2.5" />
+        <div className="absolute bottom-1.5 left-2 right-2 bg-white/95 backdrop-blur-xs border border-slate-300 px-2 py-0.5 rounded-md flex items-center justify-between text-[10px] font-mono text-slate-700 shadow-2xs">
+          <span className="truncate text-emerald-700 font-bold flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             {currentConfig.codeType} 解码成功 ({currentConfig.decodeTimeMs}ms)
           </span>
-          <span className="text-slate-400 shrink-0">Exp: {exposureTime}ms</span>
+          <span className="text-slate-500 shrink-0 font-bold">Exp: {exposureTime}ms</span>
         </div>
       </div>
 

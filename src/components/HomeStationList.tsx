@@ -106,7 +106,7 @@ export const HomeStationList: React.FC<HomeStationListProps> = ({
   };
 
   return (
-    <div className="flex-1 bg-slate-100/90 text-slate-900 flex flex-col p-3 sm:p-4 gap-3 overflow-hidden select-none font-sans min-h-0">
+    <div className="flex-1 bg-slate-100/90 text-slate-900 flex flex-col p-3 sm:p-4 gap-3 overflow-y-auto select-none font-sans min-h-0">
       {/* Top Compact Summary & Filter Control Bar */}
       <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-2.5 shadow-xs flex flex-wrap items-center justify-between gap-3 shrink-0">
         {/* Left: Title */}
@@ -119,79 +119,43 @@ export const HomeStationList: React.FC<HomeStationListProps> = ({
           </div>
         </div>
 
-        {/* Center/Right: Filter Tabs + Add/Edit/Delete Station Buttons */}
-        <div className="flex items-center gap-2.5 ml-auto flex-wrap">
-          {/* Status Filter Tabs */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold">
-            <button
-              onClick={() => setFilterStatus('ALL')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                filterStatus === 'ALL'
-                  ? 'bg-white text-blue-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              全部 ({stations.length})
-            </button>
-            <button
-              onClick={() => setFilterStatus('RUNNING')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                filterStatus === 'RUNNING'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              运行 ({runningCount})
-            </button>
-            <button
-              onClick={() => setFilterStatus('STANDBY')}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                filterStatus === 'STANDBY'
-                  ? 'bg-amber-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              待机 ({standbyCount})
-            </button>
-          </div>
-
-          {/* Station Management Actions: Add, Edit, Delete */}
-          <div className="flex items-center gap-1.5">
-            {/* Add Station Button */}
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs sm:text-sm font-bold rounded-xl border border-blue-300 flex items-center gap-1 cursor-pointer transition-all shadow-xs shrink-0 active:scale-95"
-              title="添加新机台"
-            >
-              <Plus className="w-4 h-4 text-blue-600" />
-              <span>添加</span>
-            </button>
-
-            {/* Edit Station Button */}
-            <button
-              onClick={() => openEditModal()}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-xl border border-slate-300 flex items-center gap-1 cursor-pointer transition-all shadow-xs shrink-0 active:scale-95"
-              title="修改机台信息"
-            >
-              <Edit2 className="w-3.5 h-3.5 text-slate-600" />
-              <span>修改</span>
-            </button>
-
-            {/* Delete Station Button */}
-            <button
-              onClick={() => openDeleteModal()}
-              className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs sm:text-sm font-bold rounded-xl border border-red-300 flex items-center gap-1 cursor-pointer transition-all shadow-xs shrink-0 active:scale-95"
-              title="删除机台"
-            >
-              <Trash2 className="w-3.5 h-3.5 text-red-600" />
-              <span>删除</span>
-            </button>
-          </div>
+        {/* Right: Status Filter Tabs (全部, 运行, 待机) */}
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold ml-auto shrink-0 shadow-2xs">
+          <button
+            onClick={() => setFilterStatus('ALL')}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              filterStatus === 'ALL'
+                ? 'bg-white text-blue-700 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            全部 ({stations.length})
+          </button>
+          <button
+            onClick={() => setFilterStatus('RUNNING')}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              filterStatus === 'RUNNING'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            运行 ({runningCount})
+          </button>
+          <button
+            onClick={() => setFilterStatus('STANDBY')}
+            className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+              filterStatus === 'STANDBY'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            待机 ({standbyCount})
+          </button>
         </div>
       </div>
 
-      {/* 8 Stations Tiled 4x2 Grid (Flat Tile Layout with Large Readable Fonts) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-1 min-h-0">
+      {/* 8 Stations Tiled 4x2 Grid (Flat Compact Tile Layout) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {filteredStations.map((st) => {
           const isRunning = st.status === 'RUNNING';
 
@@ -199,11 +163,11 @@ export const HomeStationList: React.FC<HomeStationListProps> = ({
             <div
               key={st.id}
               onClick={() => onSelectStationForControl(st.id)}
-              className="bg-white hover:bg-slate-50/90 border-2 border-slate-300 hover:border-blue-500 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between transition-all hover:shadow-md cursor-pointer group select-none relative overflow-hidden"
+              className="bg-white hover:bg-slate-50/90 border-2 border-slate-300 hover:border-blue-500 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between gap-2 transition-all hover:shadow-md cursor-pointer group select-none relative overflow-hidden"
             >
-              <div className="space-y-2">
+              <div className="space-y-1.5 flex-1 flex flex-col justify-start">
                 {/* Top Row: Station Title, ID, Status Badge */}
-                <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1">
                   <div className="flex items-center gap-2 min-w-0">
                     <div
                       className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 border ${
@@ -235,15 +199,19 @@ export const HomeStationList: React.FC<HomeStationListProps> = ({
                   </div>
                 </div>
 
-                {/* Station Info: PCB Spec & Lot */}
+                {/* Station Info: PCB Spec & Lot (待机状态保留标签，规格与批次内容留空) */}
                 <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50/90 px-2.5 py-1.5 rounded-xl border border-slate-200">
                   <div className="truncate">
                     <span className="text-slate-400 block text-[10px] font-bold">PCB规格</span>
-                    <span className="text-slate-900 font-black text-xs truncate block">{st.pcbDimensions}</span>
+                    <span className="text-slate-900 font-black text-xs truncate block min-h-[1rem]">
+                      {isRunning ? st.pcbDimensions : ''}
+                    </span>
                   </div>
                   <div className="truncate text-right">
                     <span className="text-slate-400 block text-[10px] font-bold">当前批次</span>
-                    <span className="text-slate-700 font-bold text-xs truncate block">{st.currentLot}</span>
+                    <span className="text-slate-700 font-bold text-xs truncate block min-h-[1rem]">
+                      {isRunning ? st.currentLot : ''}
+                    </span>
                   </div>
                 </div>
 
@@ -268,16 +236,21 @@ export const HomeStationList: React.FC<HomeStationListProps> = ({
                     </div>
 
                     <button
+                      disabled={!isRunning}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onTriggerEstopM01?.();
+                        if (isRunning) onTriggerEstopM01?.();
                       }}
-                      className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 border transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white border-red-700 ${
-                        m01Estop ? 'bg-red-700 animate-pulse ring-2 ring-red-400' : ''
+                      className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 border transition-all shadow-xs shrink-0 ${
+                        isRunning
+                          ? `bg-red-600 hover:bg-red-700 active:bg-red-800 text-white border-red-700 cursor-pointer active:scale-95 ${
+                              m01Estop ? 'bg-red-700 animate-pulse ring-2 ring-red-400' : ''
+                            }`
+                          : 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed opacity-60'
                       }`}
-                      title="M-01 上料复合机器人急停"
+                      title={isRunning ? 'M-01 上料复合机器人急停' : '测厚机未在工作状态，急停不可用'}
                     >
-                      <AlertOctagon className="w-3.5 h-3.5 text-white shrink-0" />
+                      <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
                       <span>{m01Estop ? 'M-01已急停' : 'M-01急停'}</span>
                     </button>
                   </div>
@@ -301,37 +274,38 @@ export const HomeStationList: React.FC<HomeStationListProps> = ({
                     </div>
 
                     <button
+                      disabled={!isRunning}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onTriggerEstopM02?.();
+                        if (isRunning) onTriggerEstopM02?.();
                       }}
-                      className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 border transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white border-red-700 ${
-                        m02Estop ? 'bg-red-700 animate-pulse ring-2 ring-red-400' : ''
+                      className={`px-2.5 sm:px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 border transition-all shadow-xs shrink-0 ${
+                        isRunning
+                          ? `bg-red-600 hover:bg-red-700 active:bg-red-800 text-white border-red-700 cursor-pointer active:scale-95 ${
+                              m02Estop ? 'bg-red-700 animate-pulse ring-2 ring-red-400' : ''
+                            }`
+                          : 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed opacity-60'
                       }`}
-                      title="M-02 下料复合机器人急停"
+                      title={isRunning ? 'M-02 下料复合机器人急停' : '测厚机未在工作状态，急停不可用'}
                     >
-                      <AlertOctagon className="w-3.5 h-3.5 text-white shrink-0" />
+                      <AlertOctagon className="w-3.5 h-3.5 shrink-0" />
                       <span>{m02Estop ? 'M-02已急停' : 'M-02急停'}</span>
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Bottom Row: Work Status & Control Button */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-200 gap-2 mt-2">
-                <div className="text-xs font-mono text-slate-600 truncate">
-                  工况: <strong className={isRunning ? 'text-emerald-700' : 'text-amber-700'}>{isRunning ? '作业中' : '就绪'}</strong>
-                </div>
-
+              {/* Bottom Row: Control Button */}
+              <div className="pt-1.5 border-t border-slate-200 mt-0.5">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelectStationForControl(st.id);
                   }}
-                  className="px-3.5 sm:px-4 py-1.5 bg-[#5bc0de] hover:bg-[#31b0d5] active:bg-[#269abc] text-white font-black text-xs sm:text-sm rounded-xl border border-[#46b8da] shadow-xs group-hover:shadow-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
+                  className="w-full py-1.5 px-3 bg-[#5bc0de] hover:bg-[#31b0d5] active:bg-[#269abc] text-white font-black text-xs sm:text-sm rounded-xl border border-[#46b8da] shadow-xs group-hover:shadow-sm flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                 >
                   <Cpu className="w-3.5 h-3.5" />
-                  <span>控制</span>
+                  <span>进入机台控制</span>
                   <ArrowRight className="w-3.5 h-3.5 opacity-80 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>

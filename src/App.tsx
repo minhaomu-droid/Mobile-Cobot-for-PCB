@@ -119,6 +119,10 @@ export default function App() {
     }
   };
 
+  // Dispatch Server Configuration
+  const [dispatchServerIp, setDispatchServerIp] = useState<string>('192.168.1.100');
+  const [dispatchServerPort, setDispatchServerPort] = useState<string>('8080');
+
   // Deployment tasks & calibration points
   const [dispatchTasks, setDispatchTasks] = useState<DispatchTask[]>(INITIAL_DISPATCH_TASKS);
   const [calibrationPoints, setCalibrationPoints] = useState<CalibrationPoint[]>(INITIAL_CALIBRATION_POINTS);
@@ -279,6 +283,33 @@ export default function App() {
       })
     );
     showToast(`批次剩余板数已更新为 ${count} 片，系统恢复作业！`);
+  };
+
+  // Handler: Update Remaining Boards directly from Station Control
+  const handleUpdateRemainingBoards = (stationId: string, newRemaining: number) => {
+    const validRemaining = Math.max(0, newRemaining);
+    setStations((prev) =>
+      prev.map((s) => {
+        if (s.id === stationId) {
+          const completed = s.passCount + s.failCount;
+          const newGoal = completed + validRemaining;
+          return {
+            ...s,
+            totalBoardsGoal: newGoal,
+            loadingAMR: {
+              ...s.loadingAMR,
+              totalBoardsGoal: newGoal,
+            },
+            unloadingAMR: {
+              ...s.unloadingAMR,
+              totalBoardsGoal: newGoal,
+            },
+          };
+        }
+        return s;
+      })
+    );
+    showToast(`机台剩余数量已更新为 ${validRemaining} 片`);
   };
 
   // Handler: Trigger Task Mode with Safety Confirmation
@@ -460,14 +491,46 @@ export default function App() {
   // 1. 登录页 (Login Page)
   if (!isLoggedIn || currentPanel === 'LOGIN') {
     return (
-      <LoginAuth
-        onLoginSuccess={(session) => {
-          setUserSession(session);
-          setIsLoggedIn(true);
-          setCurrentPanel('HOME_STATION_LIST');
-          showToast(`登录成功，当前身份: ${session.fullName} (${session.role === 'OPERATOR' ? '操作员' : '高级工程师'})`);
-        }}
-      />
+      <>
+        <LoginAuth
+          serverIp={dispatchServerIp}
+          serverPort={dispatchServerPort}
+          onOpenServerConfigModal={() => setActiveModal('DISPATCH_SERVER_CONFIG')}
+          onLoginSuccess={(session) => {
+            setUserSession(session);
+            setIsLoggedIn(true);
+            setCurrentPanel('HOME_STATION_LIST');
+            showToast(`登录成功，当前身份: ${session.fullName} (${session.role === 'OPERATOR' ? '操作员' : '高级工程师'})`);
+          }}
+        />
+
+        {/* Modal for dispatch server config on login page */}
+        <ModalLightbox
+          activeModal={activeModal}
+          serverIp={dispatchServerIp}
+          serverPort={dispatchServerPort}
+          onSaveServerConfig={(ip, port) => {
+            setDispatchServerIp(ip);
+            setDispatchServerPort(port);
+            showToast(`调度服务通信配置已更新为: ${ip}:${port}`);
+          }}
+          onCloseModal={() => setActiveModal('NONE')}
+          onConfirmStartLoading={handleConfirmStartLoading}
+          onConfirmBoardsInput={handleConfirmBoardsInput}
+          onResetEstop={() => {
+            setIsEstopTriggered(false);
+            setActiveModal('NONE');
+          }}
+        />
+
+        {/* Global Toast Notification */}
+        {toastMsg && (
+          <div className="fixed bottom-6 right-6 z-50 bg-white border-2 border-slate-300 text-slate-900 font-bold text-xs px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 animate-fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{toastMsg}</span>
+          </div>
+        )}
+      </>
     );
   }
 
@@ -491,6 +554,8 @@ export default function App() {
         {/* Top Real-time Hardware & Safety Status Bar (Every page displays E-stop, Alarms, Pad Battery, RMS Sync) */}
         <TopStatusBar
           userSession={userSession}
+          serverIp={dispatchServerIp}
+          serverPort={dispatchServerPort}
           isEstopTriggered={isEstopTriggered}
           unhandledAlarmsCount={unhandledAlarmsCount}
           latestAlarmMsg={latestAlarmMsg}
@@ -537,6 +602,7 @@ export default function App() {
             onTriggerSafeStop={handleTriggerSafeStop}
             onTriggerGlobalEstop={handleTriggerGlobalEstop}
             onTriggerFirstArticle={handleTriggerFirstArticle}
+            onOpenFirstArticleModal={() => setActiveModal('FIRST_ARTICLE_CONFIRM')}
             onResetRobot={handleResetRobot}
             onSyncRMS={handleSyncRMS}
             onBackToHome={() => setCurrentPanel('HOME_STATION_LIST')}
@@ -545,6 +611,7 @@ export default function App() {
             m02Estop={m02Estop}
             onTriggerEstopM01={handleTriggerEstopM01}
             onTriggerEstopM02={handleTriggerEstopM02}
+            onUpdateRemainingBoards={handleUpdateRemainingBoards}
           />
         )}
 
@@ -555,6 +622,7 @@ export default function App() {
             selectedRobotType={selectedRobotType}
             onSelectRobotType={(rType) => setSelectedRobotType(rType)}
             onNavigateBackToL3={() => setCurrentPanel('STATION_OPERATION')}
+            onBackToHome={() => setCurrentPanel('HOME_STATION_LIST')}
             pokaYokeHoldSeconds={2.0}
             onRequestGripperSafetyConfirm={handleRequestGripperSafetyConfirm}
             onLogout={handleLogout}
@@ -567,7 +635,11 @@ export default function App() {
 
         {/* 4. 报警信息 / 日志 (Alarm Audit Logs) */}
         {currentPanel === 'ALARM_LOGS' && (
-          <AlarmLogs alarms={alarms} onClearAlarm={handleClearAlarm} />
+          <AlarmLogs
+            alarms={alarms}
+            onClearAlarm={handleClearAlarm}
+            onBackToHome={() => setCurrentPanel('HOME_STATION_LIST')}
+          />
         )}
 
         {/* 5. 部署与调度 (Deployment & Scheduling - Engineer/Admin Only) */}
@@ -624,16 +696,24 @@ export default function App() {
         )}
       </div>
 
-      {/* Modals: Task Safety, Gripper Safety, Lock Confirm, Remaining Boards, E-Stop */}
+      {/* Modals: Task Safety, Gripper Safety, Lock Confirm, Remaining Boards, E-Stop, Dispatch Server Config */}
       <ModalLightbox
         activeModal={activeModal}
         pendingTaskMode={pendingTaskMode}
         pendingGripperAction={pendingGripperAction}
+        serverIp={dispatchServerIp}
+        serverPort={dispatchServerPort}
+        onSaveServerConfig={(ip, port) => {
+          setDispatchServerIp(ip);
+          setDispatchServerPort(port);
+          showToast(`调度服务通信配置已更新为: ${ip}:${port}`);
+        }}
         onCloseModal={() => setActiveModal('NONE')}
         onConfirmStartLoading={handleConfirmStartLoading}
         onConfirmBoardsInput={handleConfirmBoardsInput}
         onConfirmTaskSafety={handleConfirmTaskSafety}
         onConfirmGripperAction={handleConfirmGripperAction}
+        onConfirmFirstArticle={handleTriggerFirstArticle}
         onResetEstop={() => {
           setIsEstopTriggered(false);
           setActiveModal('NONE');

@@ -64,22 +64,22 @@ export const RobotArmSimulation: React.FC<RobotArmSimulationProps> = ({
   const tcpY = j4Y + l5 * Math.sin(wristAngle);
 
   return (
-    <div className="bg-white border-2 border-slate-300 rounded-2xl p-2.5 flex flex-col justify-between relative shadow-xs select-none">
+    <div className="bg-white border-2 border-slate-300 rounded-2xl p-2.5 flex flex-col justify-between relative shadow-xs select-none h-full flex-1 min-h-0">
       {/* Top Header & View Mode Switcher */}
-      <div className="flex items-center justify-between pb-1.5 px-1 border-b border-slate-200 text-xs font-mono">
-        <div className="flex items-center gap-1.5 text-slate-800 font-sans font-bold">
-          <Activity className={`w-3.5 h-3.5 ${isMoving ? 'text-amber-500 animate-spin' : 'text-blue-600'}`} />
-          <span className="text-xs text-slate-900 font-black">六轴机械臂运动学仿真 (3D Kinematics)</span>
-          <span className="text-[10px] text-blue-700 font-mono bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200 font-bold">
-            6-DOF
+      <div className="flex items-center justify-between pb-1.5 px-1 border-b border-slate-200 text-xs font-mono shrink-0 gap-2">
+        <div className="flex items-center gap-1.5 text-slate-800 font-sans font-bold min-w-0">
+          <Activity className={`w-3.5 h-3.5 shrink-0 ${isMoving ? 'text-amber-500 animate-spin' : 'text-blue-600'}`} />
+          <span className="text-xs text-slate-900 font-black whitespace-nowrap">六轴机械臂运动学仿真</span>
+          <span className="text-[10px] text-blue-700 font-mono bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200 font-bold whitespace-nowrap shrink-0">
+            6自由度
           </span>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 shrink-0">
           <button
             onClick={() => setViewMode('3D')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer whitespace-nowrap ${
               viewMode === '3D'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -89,7 +89,7 @@ export const RobotArmSimulation: React.FC<RobotArmSimulationProps> = ({
           </button>
           <button
             onClick={() => setViewMode('SIDE')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer whitespace-nowrap ${
               viewMode === 'SIDE'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -99,7 +99,7 @@ export const RobotArmSimulation: React.FC<RobotArmSimulationProps> = ({
           </button>
           <button
             onClick={() => setViewMode('TOP')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer ${
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer whitespace-nowrap ${
               viewMode === 'TOP'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
@@ -110,8 +110,8 @@ export const RobotArmSimulation: React.FC<RobotArmSimulationProps> = ({
         </div>
       </div>
 
-      {/* Dynamic 2D/3D Kinematic Arm Canvas - Light Background */}
-      <div className="relative w-full h-36 sm:h-40 bg-[#f8fafc] rounded-xl overflow-hidden my-1.5 flex items-center justify-center border border-slate-300">
+      {/* Dynamic 2D/3D Kinematic Arm Canvas - Light Background (撑满矩形框) */}
+      <div className="relative w-full flex-1 min-h-[140px] bg-[#f8fafc] rounded-xl overflow-hidden my-1.5 flex items-center justify-center border border-slate-300">
         <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full h-full">
           <defs>
             {/* Grid Pattern */}
@@ -253,17 +253,22 @@ export const RobotArmSimulation: React.FC<RobotArmSimulationProps> = ({
           <circle cx={tcpX} cy={tcpY} r="16" fill="none" stroke="#0284c7" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.6" />
         </svg>
 
-        {/* Real-time Simulation Status Overlay Badge */}
-        <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-mono text-slate-800 border border-slate-300 shadow-xs flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-          <span className="font-bold">TCP 位姿:</span>
-          <span className="text-blue-700 font-black">
-            [{cartesianPos.x.toFixed(0)}, {cartesianPos.y.toFixed(0)}, {cartesianPos.z.toFixed(0)}] mm
-          </span>
-          <span className="text-slate-300">|</span>
-          <span className="text-indigo-700 font-bold">
-            [{cartesianPos.rx.toFixed(0)}°, {cartesianPos.ry.toFixed(0)}°, {cartesianPos.rz.toFixed(0)}°]
-          </span>
+        {/* Real-time Simulation Status Overlay Badge (下移并分两行垂直堆叠: 上行 XYZ, 下行 俯仰偏 RPY) */}
+        <div className="absolute top-4 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1.5 rounded-xl text-[10px] font-mono text-slate-800 border border-slate-300 shadow-sm flex flex-col gap-1 z-10 pointer-events-none">
+          <div className="flex items-center gap-1.5 border-b border-slate-200 pb-0.5">
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
+            <span className="font-sans font-bold text-slate-800 text-[10px]">TCP 位姿</span>
+          </div>
+          {/* 1. XYZ 坐标 (下移一层) */}
+          <div className="flex items-center gap-1.5 text-blue-700 font-black">
+            <span className="text-slate-500 font-sans font-bold text-[9px]">XYZ:</span>
+            <span>[{cartesianPos.x.toFixed(0)}, {cartesianPos.y.toFixed(0)}, {cartesianPos.z.toFixed(0)}] mm</span>
+          </div>
+          {/* 2. 俯仰偏 (Rx, Ry, Rz - 移动到 XYZ 下面) */}
+          <div className="flex items-center gap-1.5 text-indigo-700 font-bold">
+            <span className="text-slate-500 font-sans font-bold text-[9px]">RPY:</span>
+            <span>[{cartesianPos.rx.toFixed(0)}°, {cartesianPos.ry.toFixed(0)}°, {cartesianPos.rz.toFixed(0)}°]</span>
+          </div>
         </div>
       </div>
     </div>

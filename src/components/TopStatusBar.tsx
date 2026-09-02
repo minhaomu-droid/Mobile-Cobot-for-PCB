@@ -83,8 +83,10 @@ export const TopStatusBar: React.FC<TopStatusBarProps> = ({
     >
       {/* Group 1: 核心网络与终端信息 (调度/WiFi/Pad电量/操作员) */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-        {/* 1. 调度服务器连接 */}
-        <div className="bg-[#f0f5fa] hover:bg-[#e4eff8] border border-[#d9e6f2] px-3 py-1.5 rounded-2xl flex items-center gap-2 text-xs sm:text-sm font-sans text-slate-700 shadow-xs transition-all">
+        {/* 1. 调度服务器信息 (仅做状态展示，不可点击弹窗) */}
+        <div
+          className="bg-[#f0f5fa] border border-[#d9e6f2] px-3 py-1.5 rounded-2xl flex items-center gap-2 text-xs sm:text-sm font-sans text-slate-700 shadow-xs"
+        >
           <Cpu className="w-4 h-4 text-blue-600 shrink-0" />
           <span className="text-slate-600 text-xs font-medium">调度服务:</span>
           <span className="font-mono font-black text-slate-900 text-xs sm:text-sm">
@@ -124,16 +126,16 @@ export const TopStatusBar: React.FC<TopStatusBarProps> = ({
 
       {/* Group 2: 全局安全与状态 */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
-        {/* RMS 同步状态 */}
-        <div
+        {/* 刷新RMS 状态标签与刷新按键 */}
+        <button
           onClick={onSyncRMS}
-          className="hidden md:flex bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-2xl items-center gap-1.5 text-xs sm:text-sm font-sans font-bold transition-all cursor-pointer shadow-xs"
-          title="RMS数据实时同步中，点击手动刷新"
+          className="bg-emerald-50/90 hover:bg-emerald-100 active:bg-emerald-200 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs sm:text-sm font-sans font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+          title="点击手动触发 RMS 数据同步与刷新"
         >
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-          <span className="text-xs sm:text-sm">RMS已同步</span>
+          <span className="text-xs sm:text-sm">刷新RMS</span>
           <RefreshCw className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-        </div>
+        </button>
 
         {/* 警告与报警日志入口 */}
         <button
