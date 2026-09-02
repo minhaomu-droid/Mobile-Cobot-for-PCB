@@ -13,11 +13,6 @@ jobs:
       - name: 拉取仓库代码
         uses: actions/checkout@v4
 
-      - name: 配置 Node.js 环境
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
       - name: 安装项目依赖
         run: npm install --legacy-peer-deps
 
