@@ -14,6 +14,7 @@ import {
   AlertOctagon,
   RotateCcw,
   Home,
+  Battery,
 } from 'lucide-react';
 import { ThicknessStation, AMRRobotState } from '../types';
 
@@ -270,8 +271,8 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
 
       {/* Top Header Bar & Recovery Points (Unified Clean Ribbon) */}
       <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-2.5 shadow-xs flex flex-col lg:flex-row items-center justify-between gap-3 shrink-0">
-        {/* Left: Home Button + Title: 当前机器人(例如 M-02) 复合机器人控制 */}
-        <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
+        {/* Left: Home Button + Title: 当前机器人(例如 M-01) 复合机器人控制 + 实时电量 */}
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start flex-wrap">
           <button
             onClick={onBackToHome || onNavigateBackToL3}
             className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-bold text-xs sm:text-sm rounded-xl border border-slate-300 shadow-2xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
@@ -281,10 +282,46 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
             <span>首页</span>
           </button>
 
-          <div>
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-base sm:text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
               <span>{selectedRobotType === 'LOADING' ? 'M-01' : 'M-02'} 复合机器人控制</span>
             </h1>
+
+            {/* 机器人实时电量显示 (与机器人关联在一块) */}
+            <div
+              className="px-2.5 py-1 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
+              title={`当前${selectedRobotType === 'LOADING' ? 'M-01' : 'M-02'}实时电池剩余电量：${currentRobot.batteryPct}%`}
+            >
+              <Battery className={`w-4 h-4 ${
+                currentRobot.batteryPct <= 20
+                  ? 'text-red-600'
+                  : currentRobot.batteryPct <= 50
+                  ? 'text-amber-600'
+                  : 'text-emerald-600'
+              }`} />
+              <span className="text-slate-500 font-sans text-xs">电量:</span>
+              <span className={`font-mono font-black ${
+                currentRobot.batteryPct <= 20
+                  ? 'text-red-600'
+                  : currentRobot.batteryPct <= 50
+                  ? 'text-amber-600'
+                  : 'text-emerald-700'
+              }`}>
+                {currentRobot.batteryPct}%
+              </span>
+              <div className="w-7 h-2 bg-slate-200 rounded-full overflow-hidden border border-slate-300/80 hidden sm:block">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    currentRobot.batteryPct <= 20
+                      ? 'bg-red-500'
+                      : currentRobot.batteryPct <= 50
+                      ? 'bg-amber-500'
+                      : 'bg-emerald-500'
+                  }`}
+                  style={{ width: `${Math.min(Math.max(currentRobot.batteryPct, 5), 100)}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
