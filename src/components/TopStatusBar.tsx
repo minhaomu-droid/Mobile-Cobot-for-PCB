@@ -9,7 +9,8 @@ import {
   AlertOctagon,
   Bell,
   RefreshCw,
-  Power
+  Power,
+  Navigation
 } from 'lucide-react';
 import { UserSession } from '../types';
 
@@ -26,6 +27,8 @@ interface TopStatusBarProps {
   onOpenEstopModal?: () => void;
   onNavigateToAlarms?: () => void;
   onSyncRMS?: () => void;
+  systemMode?: 'AUTO' | 'MANUAL';
+  onToggleSystemMode?: () => void;
   className?: string;
 }
 
@@ -42,6 +45,8 @@ export const TopStatusBar: React.FC<TopStatusBarProps> = ({
   onOpenEstopModal,
   onNavigateToAlarms,
   onSyncRMS,
+  systemMode = 'AUTO',
+  onToggleSystemMode,
   className = '',
 }) => {
   const [currentTime, setCurrentTime] = React.useState<string>('');
@@ -126,6 +131,24 @@ export const TopStatusBar: React.FC<TopStatusBarProps> = ({
 
       {/* Group 2: 全局安全与状态 */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
+        {/* 自动/手动模式全局切换按键 (移动至顶部导航状态栏) */}
+        <button
+          onClick={onToggleSystemMode}
+          className={`px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs sm:text-sm font-sans font-bold border transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap ${
+            systemMode === 'AUTO'
+              ? 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white border-emerald-700 shadow-sm'
+              : 'bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-900 border-amber-300'
+          }`}
+          title={
+            systemMode === 'AUTO'
+              ? '当前处于【自动模式】（上首件校准、自动调度上下料已就绪）点击可切换为手动模式'
+              : '当前处于【手动模式】（底盘与机械臂手动控制已解锁；上首件与启动上下料需在自动模式下执行）点击可切换为自动模式'
+          }
+        >
+          <Navigation className={`w-3.5 h-3.5 ${systemMode === 'AUTO' ? 'text-white fill-white' : 'text-amber-700'}`} />
+          <span>{systemMode === 'AUTO' ? '自动模式' : '手动模式'}</span>
+        </button>
+
         {/* 刷新RMS 状态标签与刷新按键 */}
         <button
           onClick={onSyncRMS}

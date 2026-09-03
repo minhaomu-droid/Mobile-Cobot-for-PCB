@@ -51,6 +51,19 @@ export default function App() {
   // Alarms State
   const [alarms, setAlarms] = useState<AlarmItem[]>(INITIAL_ALARMS);
 
+  // Global Robot Operation Mode: AUTO (自动模式) vs MANUAL (手动模式)
+  const [systemMode, setSystemMode] = useState<'AUTO' | 'MANUAL'>('AUTO');
+
+  const handleToggleSystemMode = () => {
+    const nextMode = systemMode === 'AUTO' ? 'MANUAL' : 'AUTO';
+    setSystemMode(nextMode);
+    showToast(
+      nextMode === 'AUTO'
+        ? '已切换至【自动模式】：上首件校准与自动上下料任务已就绪'
+        : '已切换至【手动模式】：底盘、机械臂与夹爪手动控制已解锁'
+    );
+  };
+
   // E-Stop Safety Circuit State (System-wide + Independent M-01 / M-02)
   const [isEstopTriggered, setIsEstopTriggered] = useState<boolean>(false);
   const [m01Estop, setM01Estop] = useState<boolean>(false);
@@ -562,6 +575,8 @@ export default function App() {
           onOpenEstopModal={() => setActiveModal('ESTOP_WARNING')}
           onNavigateToAlarms={() => setCurrentPanel('ALARM_LOGS')}
           onSyncRMS={handleSyncRMS}
+          systemMode={systemMode}
+          onToggleSystemMode={handleToggleSystemMode}
         />
 
         {/* 1. 测厚机列表 (Home Station List) */}
@@ -612,6 +627,8 @@ export default function App() {
             onTriggerEstopM01={handleTriggerEstopM01}
             onTriggerEstopM02={handleTriggerEstopM02}
             onUpdateRemainingBoards={handleUpdateRemainingBoards}
+            systemMode={systemMode}
+            onShowToast={showToast}
           />
         )}
 
@@ -630,6 +647,8 @@ export default function App() {
             m02Estop={m02Estop}
             onTriggerEstopM01={handleTriggerEstopM01}
             onTriggerEstopM02={handleTriggerEstopM02}
+            systemMode={systemMode}
+            onToggleSystemMode={handleToggleSystemMode}
           />
         )}
 

@@ -31,6 +31,8 @@ interface TeleoperationL4Props {
   m02Estop?: boolean;
   onTriggerEstopM01?: () => void;
   onTriggerEstopM02?: () => void;
+  systemMode?: 'AUTO' | 'MANUAL';
+  onToggleSystemMode?: () => void;
 }
 
 export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
@@ -45,12 +47,15 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
   m02Estop = false,
   onTriggerEstopM01,
   onTriggerEstopM02,
+  systemMode,
+  onToggleSystemMode,
 }) => {
   const currentRobot: AMRRobotState =
     selectedRobotType === 'LOADING' ? station.loadingAMR : station.unloadingAMR;
 
-  // Chassis Navigation Mode: 手动模式 vs 自动模式
-  const [chassisMode, setChassisMode] = useState<'MANUAL' | 'AUTO'>('MANUAL');
+  // Chassis Navigation Mode: 手动模式 vs 自动模式 (由顶部状态栏统一管理)
+  const [localChassisMode, setLocalChassisMode] = useState<'MANUAL' | 'AUTO'>('AUTO');
+  const chassisMode = systemMode ?? localChassisMode;
 
   // Chassis Real-time Position & SLAM Telemetry
   const [chassisPose, setChassisPose] = useState({
@@ -200,7 +205,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
   // 1. 【机械臂复位点】 (Arm Home Reset)
   const handleArmHomeReset = () => {
     if (chassisMode === 'AUTO') {
-      showToast('自动调度接管中：请切换为 [手动模式] 后再执行机械臂复位');
+      showToast('自动调度接管中：请在顶部状态栏切换为 [手动模式] 后再执行机械臂复位');
       return;
     }
     setJointAngles([0, 0, 90, 0, -90, 0]);
@@ -211,7 +216,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
   // 2. 【机器人复位点】 (Robot Home Reset / Chassis Zero)
   const handleRobotHomeReset = () => {
     if (chassisMode === 'AUTO') {
-      showToast('自动调度接管中：请切换为 [手动模式] 后再执行机器人复位');
+      showToast('自动调度接管中：请在顶部状态栏切换为 [手动模式] 后再执行机器人复位');
       return;
     }
     setChassisPose({
@@ -228,7 +233,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
   // 3. 【夹具定位点】 (Gripper Calibration Pose)
   const handleGripperCalibrationPoint = () => {
     if (chassisMode === 'AUTO') {
-      showToast('自动调度接管中：请切换为 [手动模式] 后再执行夹具定位');
+      showToast('自动调度接管中：请在顶部状态栏切换为 [手动模式] 后再执行夹具定位');
       return;
     }
     setCartesianPos({ x: 510.0, y: 120.0, z: 185.0, rx: 180.0, ry: 0.0, rz: 0.0 });
@@ -238,7 +243,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
 
   const handleTriggerGripperWithSafety = (targetAction: 'OPEN' | 'CLOSE') => {
     if (chassisMode === 'AUTO') {
-      showToast('自动调度接管中：请切换为 [手动模式] 后再操作夹爪');
+      showToast('自动调度接管中：请在顶部状态栏切换为 [手动模式] 后再操作夹爪');
       return;
     }
     if (targetAction === 'OPEN') {
@@ -283,26 +288,8 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
           </div>
         </div>
 
-        {/* Center: Auto Mode + 3 Recovery Points + Robot Status */}
+        {/* Center: 3 Recovery Points + Robot Status */}
         <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto justify-center">
-          {/* 自动模式 (放在 1.机械臂复位点 前面) */}
-          <button
-            onClick={() => {
-              const nextMode = chassisMode === 'AUTO' ? 'MANUAL' : 'AUTO';
-              setChassisMode(nextMode);
-              showToast(nextMode === 'AUTO' ? '已切换至 [自动模式]：底盘、机械臂与夹爪均由自动调度系统接管' : '已切换至 [手动模式]：底盘、机械臂与夹爪手动控制已解锁');
-            }}
-            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold border shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer whitespace-nowrap ${
-              chassisMode === 'AUTO'
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
-            }`}
-            title="自动模式切换"
-          >
-            <Navigation className="w-3.5 h-3.5" />
-            <span>自动模式</span>
-          </button>
-
           <button
             onClick={handleArmHomeReset}
             className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold text-xs sm:text-sm rounded-xl border border-blue-300 shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer whitespace-nowrap"
@@ -455,7 +442,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
                 <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] rounded-xl z-10 flex flex-col items-center justify-center text-white text-center p-2">
                   <Lock className="w-5 h-5 text-emerald-400 mb-0.5" />
                   <span className="text-xs font-bold">自动调度接管中</span>
-                  <span className="text-[10px] text-slate-200">请切换为手动模式以使用手柄</span>
+                  <span className="text-[10px] text-slate-200">请在顶部状态栏切换为手动模式以使用手柄</span>
                 </div>
               )}
 
@@ -630,7 +617,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
                 <div className="absolute -inset-1 bg-slate-900/40 backdrop-blur-[2px] rounded-xl z-20 flex flex-col items-center justify-center text-white text-center p-3">
                   <Lock className="w-5 h-5 text-emerald-400 mb-1" />
                   <span className="text-xs sm:text-sm font-black">自动调度接管中</span>
-                  <span className="text-[11px] text-slate-200 mt-0.5">请切换为手动模式以进行机械臂手动控制</span>
+                  <span className="text-[11px] text-slate-200 mt-0.5">请在顶部状态栏切换为手动模式以进行机械臂手动控制</span>
                 </div>
               )}
 
@@ -885,7 +872,7 @@ export const TeleoperationL4: React.FC<TeleoperationL4Props> = ({
                     <div className="absolute -inset-0.5 bg-slate-900/40 backdrop-blur-[2px] rounded-xl z-20 flex flex-col items-center justify-center text-white text-center p-2">
                       <Lock className="w-4 h-4 text-emerald-400 mb-0.5" />
                       <span className="text-xs font-black">自动调度接管中</span>
-                      <span className="text-[10px] text-slate-200">请切换为手动模式以操作夹爪</span>
+                      <span className="text-[10px] text-slate-200">请在顶部状态栏切换为手动模式以操作夹爪</span>
                     </div>
                   )}
 

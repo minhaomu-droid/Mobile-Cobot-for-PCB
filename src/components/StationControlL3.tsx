@@ -51,6 +51,8 @@ interface StationControlL3Props {
   onTriggerEstopM01?: () => void;
   onTriggerEstopM02?: () => void;
   onUpdateRemainingBoards?: (stationId: string, newRemaining: number) => void;
+  systemMode?: 'AUTO' | 'MANUAL';
+  onShowToast?: (msg: string) => void;
 }
 
 export const StationControlL3: React.FC<StationControlL3Props> = ({
@@ -76,6 +78,8 @@ export const StationControlL3: React.FC<StationControlL3Props> = ({
   onTriggerEstopM01,
   onTriggerEstopM02,
   onUpdateRemainingBoards,
+  systemMode = 'AUTO',
+  onShowToast,
 }) => {
   const loadingAMR = station.loadingAMR;
   const unloadingAMR = station.unloadingAMR;
@@ -389,8 +393,21 @@ export const StationControlL3: React.FC<StationControlL3Props> = ({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
         {/* 1. 上首件 */}
         <button
-          onClick={onOpenFirstArticleModal || onTriggerFirstArticle}
+          onClick={() => {
+            if (systemMode === 'MANUAL') {
+              if (onShowToast) {
+                onShowToast('【模式安全互锁】上首件校准需在【自动模式】下运行，请在顶部状态栏切换为 [自动模式] 后再点击！');
+              }
+              return;
+            }
+            if (onOpenFirstArticleModal) {
+              onOpenFirstArticleModal();
+            } else if (onTriggerFirstArticle) {
+              onTriggerFirstArticle();
+            }
+          }}
           className="py-3.5 sm:py-4 px-3 bg-[#5bc0de] hover:bg-[#31b0d5] active:bg-[#269abc] text-white font-black text-sm sm:text-base rounded-2xl border border-[#46b8da] shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+          title={systemMode === 'AUTO' ? "上首件自动送样校准" : "上首件校准（需在顶部切换为自动模式）"}
         >
           <Sparkles className="w-5 h-5" />
           <span>上首件校准</span>
@@ -398,8 +415,17 @@ export const StationControlL3: React.FC<StationControlL3Props> = ({
 
         {/* 2. 启动上下料 */}
         <button
-          onClick={onOpenSafetyLockModal}
+          onClick={() => {
+            if (systemMode === 'MANUAL') {
+              if (onShowToast) {
+                onShowToast('【模式安全互锁】启动上下料需在【自动模式】下运行，请在顶部状态栏切换为 [自动模式] 后再启动！');
+              }
+              return;
+            }
+            onOpenSafetyLockModal();
+          }}
           className="py-3.5 sm:py-4 px-3 bg-[#5bc0de] hover:bg-[#31b0d5] active:bg-[#269abc] text-white font-black text-sm sm:text-base rounded-2xl border border-[#46b8da] shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+          title={systemMode === 'AUTO' ? "启动自动上下料循环任务" : "启动上下料（需在顶部切换为自动模式）"}
         >
           <Play className="w-5 h-5 fill-white" />
           <span>启动上下料</span>
